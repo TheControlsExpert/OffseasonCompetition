@@ -16,4 +16,15 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
+
+  public static class IntakeConstants {
+
+    public static final int LEFTINTAKE_ID = 0;
+    public static final int RIGHTINTAKE_ID = 0;
+    public static final int HANDOFF_ID = 0;
+    public static final boolean LEFT_INVERSION = false;
+    public static final boolean RIGHT_INVERSION = false;
+    public static final boolean HANDOFF_INVERSION = false;
+
+  }
 }
