@@ -25,6 +25,10 @@ public final class Constants {
     public static final boolean LEFT_INVERSION = false;
     public static final boolean RIGHT_INVERSION = false;
     public static final boolean HANDOFF_INVERSION = false;
+    public static final int frontIR_ID = 0;
+    public static final int firstIR_ID = 0;
+    public static final int middleIR_ID = 0;
+    public static final int lastIR_ID = 0;
 
   }
 }
