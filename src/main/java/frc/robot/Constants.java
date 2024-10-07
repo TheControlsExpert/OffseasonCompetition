@@ -31,4 +31,14 @@ public final class Constants {
     public static final int lastIR_ID = 0;
 
   }
+
+
+  public static class PivotConstants {
+
+    public static final int PivotID = 0;
+    public static final double kP = 0;
+    public static final double kD = 0;
+    public static final boolean PivotInversion = false;
+    
+  }
 }
