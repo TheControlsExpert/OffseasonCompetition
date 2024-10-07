@@ -10,16 +10,17 @@ public class SensorsIO {
     DigitalInput middleIR = new DigitalInput(Constants.IntakeConstants.middleIR_ID);
     DigitalInput lastIR = new DigitalInput(Constants.IntakeConstants.lastIR_ID);
 
+    
 
     @AutoLog
-    public class SensorIOInputs {
-        public boolean firstReading = firstIR.get();
-        public boolean middleReading = middleIR.get();
-        public boolean lastReading = lastIR.get();
+    public static class SensorsIOInputs {
+        public boolean firstReading = false;
+        public boolean middleReading = false;
+        public boolean lastReading = false;
     }
 
 
-    public void updateInputs(SensorIOInputs inputs) {
+    public void updateInputs(SensorsIOInputs inputs) {
         inputs.firstReading = firstIR.get();
         inputs.middleReading = middleIR.get();
         inputs.lastReading = lastIR.get();

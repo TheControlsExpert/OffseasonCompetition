@@ -4,7 +4,7 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface RollersIO{
     @AutoLog
-    public static class RollersIOInputs {
+    public class RollersIOInputs {
         //CAN all good?
         //Edit: no such function for neos :(
         // public boolean MotorleftIntakeConnected;
