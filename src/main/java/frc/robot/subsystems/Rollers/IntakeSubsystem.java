@@ -9,19 +9,23 @@ import frc.robot.subsystems.Rollers.SensorsIO.SensorsIOInputs;
 
 
 public class IntakeSubsystem extends SubsystemBase {
+
+
+
     public enum Checkpoint {
         //intaking status
         DETECTED,
-        REACHED_HANDOFF,
-        REACHED_SHOOTER,
-        STATIONED,
+        IDLE,
+       
 
         //outtaking status
         OUTTAKING,
-        TRANSITIONING,   
+        MANUAL_INTAKING,   
 
         //No note or just initialized (we don't want intake turning on)
-        IDLE,
+        //IDLE,
+        //No note, but intake on
+        INITIATED,
 
         //Shooting
 
@@ -30,30 +34,110 @@ public class IntakeSubsystem extends SubsystemBase {
 
 
     @AutoLogOutput(key = "IntakeSubsystem-LastCompletedCheckpoint")
-    private Checkpoint CompletedCheckpoint = Checkpoint.IDLE;
+    public Checkpoint CompletedCheckpoint = Checkpoint.IDLE;
 
-    private  RollersIO Rollersio; 
+    private  RollersIONEO Rollersio; 
     private final RollersIOInputsAutoLogged inputs_rollers = new RollersIOInputsAutoLogged();
 
     //private final SensorsIO Sensorsio = new SensorsIO();
     
     
     private SensorsIO Sensorsio;
+    private final SensorsIOInputsAutoLogged inputs_sensors = new SensorsIOInputsAutoLogged();
     
     //private final SensorsIOInputsAutoLogged 
     //private final SensorsIOInputsAutoLogged inputs_sensors = new SensorsIOInputsAutoLogged();
 
-    public IntakeSubsystem(RollersIO ioRollers, SensorsIO Sensorsio) {
+    public IntakeSubsystem(RollersIONEO Rollersio, SensorsIO Sensorsio) {
         this.Rollersio = Rollersio;
         this.Sensorsio = Sensorsio;
+
+        //updating here as the input default values make no sense. Ex. 0 Celsius motors?
+        this.Rollersio.updateInputs(inputs_rollers);
+        this.Sensorsio.updateInputs(inputs_sensors);
     }
 
 
 
     @Override
     public void periodic() {
-        //io.updateInputs(inputs);
-        //Logger.processInputs("Intake Motors", inputs);
+        Rollersio.updateInputs(inputs_rollers);
+        Sensorsio.updateInputs(inputs_sensors);
+
+       
+        //state transitioning 
+
+        // if (CompletedCheckpoint == Checkpoint.IDLE && (inputs_sensors.lastReading)) {
+        //     //happens at the start if there's a note inside and skips all intake logic
+        //     CompletedCheckpoint = Checkpoint.STOWED;
+        // }
+
+
+         if (CompletedCheckpoint.equals(Checkpoint.INITIATED) && inputs_sensors.firstReading) {
+            CompletedCheckpoint = Checkpoint.DETECTED;
+            
+
+        }
+
+        else if (CompletedCheckpoint.equals(Checkpoint.DETECTED) && inputs_sensors.lastReading) {
+            CompletedCheckpoint = Checkpoint.IDLE;
+        }
+
+        else if (CompletedCheckpoint.equals(Checkpoint.EJECTED) && !inputs_sensors.firstReading && !inputs_sensors.lastReading) {
+            CompletedCheckpoint = Checkpoint.IDLE;  
+          
+
+        }
+
+
+        //state control
+
+        if (CompletedCheckpoint.equals(Checkpoint.INITIATED) || CompletedCheckpoint.equals(Checkpoint.DETECTED)) {
+            Rollersio.setSpeedHandoff(1);
+            Rollersio.setSpeedLeftIntake(1);
+            Rollersio.setSpeedRightIntake(1);
+
+        }
+
+        else if (CompletedCheckpoint.equals(Checkpoint.IDLE)) {
+            Rollersio.setSpeedHandoff(0);
+            Rollersio.setSpeedLeftIntake(0);
+            Rollersio.setSpeedRightIntake(0);
+            
+        }
+
+        else if (CompletedCheckpoint.equals(Checkpoint.EJECTED)) {
+            if (inputs_sensors.lastReading) {
+                Rollersio.setSpeedHandoff(1);
+                Rollersio.setSpeedLeftIntake(0);
+                Rollersio.setSpeedRightIntake(0);
+            }
+
+            else {
+                Rollersio.setSpeedHandoff(1);
+                Rollersio.setSpeedLeftIntake(1);
+                Rollersio.setSpeedRightIntake(1);
+            }
+
+        }
+
+
+        else if (CompletedCheckpoint.equals(Checkpoint.MANUAL_INTAKING) && !inputs_sensors.lastReading) {
+            Rollersio.setSpeedHandoff(1);
+            Rollersio.setSpeedLeftIntake(1);
+            Rollersio.setSpeedRightIntake(1);
+
+
+        } 
+
+
+        else if (CompletedCheckpoint.equals(Checkpoint.OUTTAKING)) {
+            Rollersio.setSpeedHandoff(-1);
+            Rollersio.setSpeedLeftIntake(-1);
+            Rollersio.setSpeedRightIntake(-1);
+
+        }
+     
     }
 
 
