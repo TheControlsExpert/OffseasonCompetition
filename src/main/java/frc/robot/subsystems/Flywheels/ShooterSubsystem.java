@@ -56,8 +56,8 @@ public class ShooterSubsystem extends SubsystemBase {
             }
     
             else if (ShooterdesiredState.equals(ShooterDesiredState.AMP)) {
-                newsetpointB = Constants.ShooterConstants.AMP_POSITIONB;
-                newsetpointT = Constants.ShooterConstants.AMP_POSITIONT;
+                newsetpointB = 1000;
+                newsetpointT = 500;
 
             }
     

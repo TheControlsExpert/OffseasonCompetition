@@ -9,10 +9,14 @@ import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.DriveCommands.Drive;
 import frc.robot.commands.DriveCommands.TeleopSwerve;
+import frc.robot.commands.IntakeCommands.AlignIntakeDrive;
+import frc.robot.commands.IntakeCommands.AligningCombination;
+import frc.robot.commands.IntakeCommands.DriveTime;
 import frc.robot.commands.IntakeCommands.IntakeCommand;
 import frc.robot.commands.IntakeCommands.IntakeManualCommand;
 import frc.robot.commands.IntakeCommands.OuttakeCommand;
 import frc.robot.commands.ShooterCommands.Shoot;
+import frc.robot.commands.ShooterCommands.Aligning.Amp;
 import frc.robot.commands.ShooterCommands.Aligning.Subwoofer;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Flywheels.FlywheelIONEO;
@@ -24,9 +28,11 @@ import frc.robot.subsystems.Rollers.RollersIONEO;
 import frc.robot.subsystems.Rollers.SensorsIO;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 import frc.robot.subsystems.SwerveActual.Swerve;
+import frc.robot.subsystems.Vision.Limelight3.Limelight3;
 
 import javax.swing.plaf.basic.BasicBorders.RolloverButtonBorder;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -49,6 +55,7 @@ public class RobotContainer {
   private final IntakeSubsystem intake = new IntakeSubsystem(rollers, sensors);
   private final PivotSubsystem pivot = new PivotSubsystem(pivotIO, intake);
   private final ShooterSubsystem shooter = new ShooterSubsystem(shooterIO);
+  public  Limelight3 ll3 = new Limelight3();
   //private final SwerveSubsystem swervy = new SwerveSubsystem();
   private final Swerve swervo = new Swerve();
   private final XboxController driver = new XboxController(0);
@@ -61,6 +68,9 @@ public class RobotContainer {
   // Replace with CommandPS4Controller or CommandJoystick if needed
   public final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
+
+  public final CommandXboxController m_copilotController = 
+      new CommandXboxController(1);    
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -81,11 +91,13 @@ public class RobotContainer {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
-    m_driverController.leftBumper().whileTrue(new IntakeCommand(intake, pivot));
+   // m_driverController.leftBumper().whileTrue(new IntakeCommand(intake, pivot));
     m_driverController.rightBumper().whileTrue(new OuttakeCommand(intake, pivot));
-    m_driverController.x().whileTrue(new IntakeManualCommand(intake, pivot));
+    m_driverController.x().whileTrue(new IntakeCommand(intake, pivot));
+    
 
     m_driverController.leftTrigger().whileTrue(new Subwoofer(pivot, shooter, m_driverController, intake));
+    m_driverController.a().whileTrue(new Amp(pivot, shooter, m_driverController, intake));
 
     swervo.setDefaultCommand(
             new TeleopSwerve(
@@ -97,7 +109,11 @@ public class RobotContainer {
             )
         );
 
-    m_driverController.y().onTrue(swervo.runOnce(() -> swervo.resetGyro()));    
+    m_driverController.povUp().onTrue(swervo.runOnce(() -> swervo.resetGyro()));  
+
+    m_driverController.leftBumper().whileTrue(new AligningCombination(new AlignIntakeDrive(swervo, ll3, new PIDController(8, 0, 0), new PIDController(0.2,0,0), intake, pivot), new DriveTime(intake, swervo, 1)));
+
+    m_copilotController.y().onTrue(swervo.runOnce(() -> swervo.resetGyro()));
 
 
 

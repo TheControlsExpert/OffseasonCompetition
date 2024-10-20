@@ -60,7 +60,7 @@ public class PivotSubsystem extends SubsystemBase {
          }
 
          else if (PivotDesiredState.equals(DesiredStates.AMP)) {
-            currentSetpoint = Constants.PivotConstants.AMP_POSITION;
+            currentSetpoint = 6.35;
          }
 
          else if (PivotDesiredState.equals(DesiredStates.PODIUM)) {

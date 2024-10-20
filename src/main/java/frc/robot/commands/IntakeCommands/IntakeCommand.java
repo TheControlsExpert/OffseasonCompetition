@@ -6,7 +6,7 @@ import frc.robot.subsystems.Pivot.PivotSubsystem;
 import frc.robot.subsystems.Pivot.PivotSubsystem.DesiredStates;
 import frc.robot.subsystems.Rollers.IntakeSubsystem;
 import frc.robot.subsystems.Rollers.IntakeSubsystem.Checkpoint;
-import frc.robot.subsystems.Vision.Limelight3.Vision_3_Subsystem;
+
 
 public class IntakeCommand extends Command{ 
 

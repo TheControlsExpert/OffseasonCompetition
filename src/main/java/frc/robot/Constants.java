@@ -39,7 +39,7 @@ public final class Constants {
     public static final boolean T_Inverted = false;
     public static final boolean B_Inverted = false;
     public static final double IDLE_POSITION = 0;
-    public static final double AMP_POSITION = 0;
+    
     public static final double PODIUM_POSITION = 0;
     public static final double SUBWOOFER_POSITION = 4000;
     public static final double AMP_POSITIONL = 0;
@@ -287,7 +287,7 @@ public final class Constants {
 
   public static class VisionConstants {
 
-    public static final double Height_LL3 = 0;
+    public static final double Height_LL3 = 0.2;
     public static final double Angle_LL3 = 0;
     public static final int MAX_ANGULAR_VEL = 0;
 

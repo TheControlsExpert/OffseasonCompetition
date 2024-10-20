@@ -44,10 +44,12 @@ public class TeleopSwerve extends Command {
         
         if(controller.getBButton()) {
             speed = 2;
+            rotationspeed = 3;
         }   
         
         else{
             speed = 10;
+            rotationspeed = 5;
         }
         double translationVal = Math.signum(translationSup.getAsDouble()) * Math.pow(translationSup.getAsDouble(), 2);
         double strafeVal = Math.signum(strafeSup.getAsDouble()) * Math.pow(strafeSup.getAsDouble(), 2);
@@ -61,7 +63,7 @@ public class TeleopSwerve extends Command {
        
             s_Swerve.drive(
                 new Translation2d(-translationVal, -strafeVal).times(speed), 
-                -rotationval * 3, 
+                -rotationval * rotationspeed, 
                 true, 
                 true
                 );

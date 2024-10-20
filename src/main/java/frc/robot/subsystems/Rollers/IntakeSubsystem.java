@@ -121,13 +121,13 @@ public class IntakeSubsystem extends SubsystemBase {
 
         else if (CompletedCheckpoint.equals(Checkpoint.EJECTED)) {
             if (!inputs_sensors.lastReading) {
-                Rollersio.setSpeedHandoff(0.5);
+                Rollersio.setSpeedHandoff(0.6);
                 Rollersio.setSpeedLeftIntake(0);
                 Rollersio.setSpeedRightIntake(0);
             }
 
             else {
-                Rollersio.setSpeedHandoff(0.5);
+                Rollersio.setSpeedHandoff(0.6);
                 Rollersio.setSpeedLeftIntake(0.4);
                 Rollersio.setSpeedRightIntake(0.4);
             }

@@ -22,21 +22,15 @@ public class IntakeManualCommand extends Command{
 
     @Override
     public void initialize() {
-        intake.CompletedCheckpoint = Checkpoint.MANUAL_INTAKING;
+        intake.CompletedCheckpoint = Checkpoint.INITIATED;
         
         pivot.setDesiredState(DesiredStates.HOME);
     }
 
 
-    @Override
-    public void end(boolean interrupted) {
-        intake.CompletedCheckpoint = Checkpoint.IDLE;
-        pivot.setDesiredState(DesiredStates.TRAVELLING);
-        
 
 
-        
-    }
+    
 
     
 
