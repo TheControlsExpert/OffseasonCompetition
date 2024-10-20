@@ -1,5 +1,6 @@
 package frc.robot.commands.IntakeCommands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Pivot.PivotSubsystem;
 import frc.robot.subsystems.Pivot.PivotSubsystem.DesiredStates;
@@ -16,7 +17,13 @@ public class IntakeManualCommand extends Command{
         this.intake = intake;
         this.pivot = pivot;
         addRequirements(intake, pivot);
+        
+    }
+
+    @Override
+    public void initialize() {
         intake.CompletedCheckpoint = Checkpoint.MANUAL_INTAKING;
+        
         pivot.setDesiredState(DesiredStates.HOME);
     }
 
@@ -25,6 +32,8 @@ public class IntakeManualCommand extends Command{
     public void end(boolean interrupted) {
         intake.CompletedCheckpoint = Checkpoint.IDLE;
         pivot.setDesiredState(DesiredStates.TRAVELLING);
+        
+
 
         
     }

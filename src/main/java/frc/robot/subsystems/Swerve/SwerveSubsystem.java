@@ -6,7 +6,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotState;
@@ -20,10 +20,10 @@ public class SwerveSubsystem extends SubsystemBase {
     
 
     public SwerveSubsystem() {
-        // modules[0] = new SwerveModule(new SwerveModuleIOFalcon(Constants.SwerveConstants.SwerveConfig0), 0);
-        // modules[1] = new SwerveModule(new SwerveModuleIOFalcon(Constants.SwerveConstants.SwerveConfig1), 1);
-        // modules[2] = new SwerveModule(new SwerveModuleIOFalcon(Constants.SwerveConstants.SwerveConfig2), 2);
-        // modules[3] = new SwerveModule(new SwerveModuleIOFalcon(Constants.SwerveConstants.SwerveConfig3), 3);
+         modules[0] = new SwerveModule(new SwerveModuleIOFalcon(Constants.SwerveConstants.SwerveConfig0), 0);
+         modules[1] = new SwerveModule(new SwerveModuleIOFalcon(Constants.SwerveConstants.SwerveConfig1), 1);
+         modules[2] = new SwerveModule(new SwerveModuleIOFalcon(Constants.SwerveConstants.SwerveConfig2), 2);
+         modules[3] = new SwerveModule(new SwerveModuleIOFalcon(Constants.SwerveConstants.SwerveConfig3), 3);
 
         gyroIO.resetGyro();
         
@@ -38,6 +38,8 @@ public class SwerveSubsystem extends SubsystemBase {
             module.updateInputs();
         }
 
+        
+
         SwerveModulePosition[] moduleDeltas = new SwerveModulePosition[4];
         double avgLatency = 0;
         double avgTimestamp = 0;
@@ -50,6 +52,10 @@ public class SwerveSubsystem extends SubsystemBase {
 
         avgLatency = avgLatency / 8;
         avgTimestamp = avgTimestamp/4;
+
+        for (int i = 0; i<4; i++) {
+            SmartDashboard.putNumber("setpoint drive" + i, modules[i].previousState.speedMetersPerSecond);
+        }
 
         RobotState.publishOdometry(moduleDeltas, inputsgyro.yawPositionRads, avgTimestamp - avgLatency, inputsgyro.yawvelrads);
     }  

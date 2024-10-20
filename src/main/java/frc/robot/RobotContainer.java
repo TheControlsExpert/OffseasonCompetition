@@ -7,18 +7,27 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.DriveCommands.Drive;
+import frc.robot.commands.DriveCommands.TeleopSwerve;
 import frc.robot.commands.IntakeCommands.IntakeCommand;
 import frc.robot.commands.IntakeCommands.IntakeManualCommand;
 import frc.robot.commands.IntakeCommands.OuttakeCommand;
+import frc.robot.commands.ShooterCommands.Shoot;
+import frc.robot.commands.ShooterCommands.Aligning.Subwoofer;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.Flywheels.FlywheelIONEO;
+import frc.robot.subsystems.Flywheels.ShooterSubsystem;
 import frc.robot.subsystems.Pivot.PivotIONEO;
 import frc.robot.subsystems.Pivot.PivotSubsystem;
 import frc.robot.subsystems.Rollers.IntakeSubsystem;
 import frc.robot.subsystems.Rollers.RollersIONEO;
 import frc.robot.subsystems.Rollers.SensorsIO;
+import frc.robot.subsystems.Swerve.SwerveSubsystem;
+import frc.robot.subsystems.SwerveActual.Swerve;
 
 import javax.swing.plaf.basic.BasicBorders.RolloverButtonBorder;
 
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -35,12 +44,22 @@ public class RobotContainer {
   private final RollersIONEO rollers = new RollersIONEO();
   private final SensorsIO sensors = new SensorsIO();
   private final PivotIONEO pivotIO = new PivotIONEO();
+  private final FlywheelIONEO shooterIO = new FlywheelIONEO();
   
   private final IntakeSubsystem intake = new IntakeSubsystem(rollers, sensors);
   private final PivotSubsystem pivot = new PivotSubsystem(pivotIO, intake);
+  private final ShooterSubsystem shooter = new ShooterSubsystem(shooterIO);
+  //private final SwerveSubsystem swervy = new SwerveSubsystem();
+  private final Swerve swervo = new Swerve();
+  private final XboxController driver = new XboxController(0);
+
+
+   private final int translationAxis = XboxController.Axis.kLeftY.value;
+    private final int strafeAxis = XboxController.Axis.kLeftX.value;
+    private final int rotationAxis = XboxController.Axis.kRightX.value;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController =
+  public final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -60,13 +79,29 @@ public class RobotContainer {
    */
   private void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-   
-
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
-    m_driverController.a().whileTrue(new IntakeCommand(intake, pivot));
-    m_driverController.b().whileTrue(new OuttakeCommand(intake, pivot));
+    m_driverController.leftBumper().whileTrue(new IntakeCommand(intake, pivot));
+    m_driverController.rightBumper().whileTrue(new OuttakeCommand(intake, pivot));
     m_driverController.x().whileTrue(new IntakeManualCommand(intake, pivot));
+
+    m_driverController.leftTrigger().whileTrue(new Subwoofer(pivot, shooter, m_driverController, intake));
+
+    swervo.setDefaultCommand(
+            new TeleopSwerve(
+                swervo, 
+                () -> driver.getRawAxis(translationAxis), 
+                () -> driver.getRawAxis(strafeAxis), 
+                () -> driver.getRawAxis(rotationAxis), 
+                driver
+            )
+        );
+
+    m_driverController.y().onTrue(swervo.runOnce(() -> swervo.resetGyro()));    
+
+
+
+    
   }
 
   /**

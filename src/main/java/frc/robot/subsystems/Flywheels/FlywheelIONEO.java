@@ -4,6 +4,9 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.SparkPIDController;
+
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -11,30 +14,34 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import frc.robot.Constants;
 
 public class FlywheelIONEO implements FlywheelIO {
-    private CANSparkMax shooterT = new CANSparkMax(Constants.ShooterConstants.T_ID, MotorType.kBrushless);
-    private CANSparkMax shooterB = new CANSparkMax(Constants.ShooterConstants.B_ID, MotorType.kBrushless);
+    private CANSparkMax shooterT = new CANSparkMax(15, MotorType.kBrushless);
+    private CANSparkMax shooterB = new CANSparkMax(26, MotorType.kBrushless);
+
+      SimpleMotorFeedforward feedforwardT = new SimpleMotorFeedforward(0.85, 0.0022);
+  
+  SimpleMotorFeedforward feedforwardB = new SimpleMotorFeedforward(0.25, 0.0022);
 
     public FlywheelIONEO() {
-        shooterT.getPIDController().setP(Constants.ShooterConstants.kP);
-        shooterT.getPIDController().setP(Constants.ShooterConstants.kD);
-        shooterT.setInverted(Constants.ShooterConstants.T_Inverted);
+        shooterT.getPIDController().setP(0.0001);
 
-        shooterB.getPIDController().setP(Constants.ShooterConstants.kP);
-        shooterB.getPIDController().setD(Constants.ShooterConstants.kD);
-        shooterB.setInverted(Constants.ShooterConstants.B_Inverted);
+        shooterT.setInverted(true);
+
+        shooterB.getPIDController().setP(0.001);
+
+        shooterB.setInverted(true);
     }
 
 
     @Override
     public void set_B_vel(double velocity) {
-        double feedforward = Constants.ShooterConstants.kS + Constants.ShooterConstants.kV * velocity + Constants.ShooterConstants.kA * velocity;
-        shooterB.getPIDController().setReference(velocity, com.revrobotics.CANSparkBase.ControlType.kVelocity, 0, feedforward, SparkPIDController.ArbFFUnits.kVoltage);
+        
+        shooterB.getPIDController().setReference(velocity, com.revrobotics.CANSparkBase.ControlType.kVelocity, 0, feedforwardB.calculate(velocity), SparkPIDController.ArbFFUnits.kVoltage);
     }
 
     @Override
     public void set_T_vel(double velocity) {
-        double feedforward = Constants.ShooterConstants.kS + Constants.ShooterConstants.kV * velocity + Constants.ShooterConstants.kA * velocity;
-        shooterT.getPIDController().setReference(velocity, com.revrobotics.CANSparkBase.ControlType.kVelocity, 0, feedforward, SparkPIDController.ArbFFUnits.kVoltage); 
+        
+        shooterT.getPIDController().setReference(velocity, com.revrobotics.CANSparkBase.ControlType.kVelocity, 0, feedforwardT.calculate(velocity), SparkPIDController.ArbFFUnits.kVoltage); 
     }
 
 

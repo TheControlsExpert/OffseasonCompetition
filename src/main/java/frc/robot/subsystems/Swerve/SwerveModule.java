@@ -12,8 +12,9 @@ public class SwerveModule {
 
     private ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
     private SwerveModuleIOFalcon moduleIO;
-    private SwerveModuleState previousState = new SwerveModuleState();
+    public SwerveModuleState previousState = new SwerveModuleState();
     private int index;
+
 
 
     public SwerveModule(SwerveModuleIOFalcon moduleIO, int index) {
@@ -32,6 +33,8 @@ public class SwerveModule {
 
     }
 
+
+
     public SwerveModulePosition getWheelPosition() {
 
         double Rots = inputs.drivePositionRotations - previousState.angle.getRotations();
@@ -45,6 +48,7 @@ public class SwerveModule {
         moduleIO.runDriveVelocitySetpoint(state.speedMetersPerSecond);
         moduleIO.runTurnPositionSetpoint(state.angle.getRotations());
         previousState = state;
+
     }
     
 }

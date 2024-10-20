@@ -2,9 +2,10 @@ package frc.robot.subsystems.Pivot;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
-
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants.PivotConstants;
 
 public class PivotIONEO implements PivotIO {
@@ -13,7 +14,8 @@ public class PivotIONEO implements PivotIO {
 
 
     public PivotIONEO() {
-        Pivot = new CANSparkMax(PivotConstants.PivotID, MotorType.kBrushless);
+        Pivot = new CANSparkMax(16, MotorType.kBrushless);
+        
 
         Pivot.getPIDController().setP(PivotConstants.kP);
         Pivot.getPIDController().setD(PivotConstants.kD);
@@ -36,6 +38,12 @@ public class PivotIONEO implements PivotIO {
         inputs.encodervel = Pivot.getEncoder().getVelocity();
         inputs.current = Pivot.getOutputCurrent();
         inputs.temperature = Pivot.getMotorTemperature();
+        if (DriverStation.isEnabled()) {
+            Pivot.setIdleMode(IdleMode.kBrake);
+        }
+        else {
+            Pivot.setIdleMode(IdleMode.kCoast);
+        }   
         
     }
 

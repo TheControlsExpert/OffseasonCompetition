@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import frc.robot.Constants;
+import frc.robot.Constants.SwerveConstants.SwerveModuleConfig;
 
 public class SwerveModuleIOFalcon implements SwerveModuleIO {
     TalonFX driveMotor;
@@ -30,38 +31,20 @@ public class SwerveModuleIOFalcon implements SwerveModuleIO {
     PositionVoltage positionVoltage = new PositionVoltage(0.0);
     
 
-    public static record SwerveModuleConfig(
-      int driveID,
-      int turnID,
-      int absoluteEncoderID,
-      double absoluteEncoderOffsetRotations,
-      boolean turnMotorInverted,
-      boolean driveMotorInverted, 
-      double driveReduction,
-      double turnReduction,
-
-      double ffkS,
-      double ffkV,
-      double ffkA,
-      double drivekP,
-      double drivekD,
-      double turnkP,
-      double turnkD
-      ) {}
 
 
     public SwerveModuleIOFalcon(SwerveModuleConfig config) {
 
         //drive motor
         TalonFXConfiguration for_drive = new TalonFXConfiguration();
-        driveMotor = new TalonFX(config.driveID);
+        driveMotor = new TalonFX(config.driveID());
       
 
-      for_drive.Slot0.kA = config.ffkA;
-      for_drive.Slot0.kS = config.ffkS;
-      for_drive.Slot0.kV = config.ffkV;
-      for_drive.Slot0.kP = config.drivekP;
-      for_drive.Slot0.kD = config.drivekD;
+      for_drive.Slot0.kA = config.ffkA();
+      for_drive.Slot0.kS = config.ffkS();
+      for_drive.Slot0.kV = config.ffkV();
+      for_drive.Slot0.kP = config.drivekP();
+      for_drive.Slot0.kD = config.drivekD();
 
       for_drive.CurrentLimits.SupplyCurrentLimit = Constants.SwerveConstants.DriveMotorSupplyCurrent;
       for_drive.CurrentLimits.SupplyCurrentLimitEnable = true;
@@ -69,24 +52,26 @@ public class SwerveModuleIOFalcon implements SwerveModuleIO {
       for_drive.CurrentLimits.StatorCurrentLimitEnable = true;
 
 
-      driveMotor.setInverted(config.driveMotorInverted);
+      driveMotor.setInverted(config.driveMotorInverted());
       for_drive.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
       //cancoder
 
 
-      steerEncoder = new CANcoder(config.absoluteEncoderID);
-      double absolutePosition = steerEncoder.getAbsolutePosition().getValueAsDouble() - config.absoluteEncoderOffsetRotations;
+      steerEncoder = new CANcoder(config.absoluteEncoderID());
+      double absolutePosition = steerEncoder.getAbsolutePosition().getValueAsDouble() - config.absoluteEncoderOffsetRotations().getRotations();
     //   steerMotor.setPosition(absolutePosition);
 
 
     //steer motor
 
       TalonFXConfiguration for_steer = new TalonFXConfiguration();
-      steerMotor = new TalonFX(config.turnID);
+      steerMotor = new TalonFX(config.turnID());
+  
 
-      for_steer.Slot0.kP = config.turnkP;
-      for_steer.Slot0.kD = config.turnkD;
+
+      for_steer.Slot0.kP = config.turnkP();
+      for_steer.Slot0.kD = config.turnkD();
 
       for_steer.CurrentLimits.SupplyCurrentLimit = Constants.SwerveConstants.SteerMotorSupplyCurrent;
       for_steer.CurrentLimits.SupplyCurrentLimitEnable = true;
@@ -105,14 +90,14 @@ public class SwerveModuleIOFalcon implements SwerveModuleIO {
 
       //extra steer motor config
 
-      steerMotor.setInverted(config.turnMotorInverted);
+      steerMotor.setInverted(config.steerMotorInverted());
       steerMotor.setPosition(absolutePosition);
 
 
 
       //optimization
-      driveMotor.optimizeBusUtilization();
-      steerMotor.optimizeBusUtilization();
+      // driveMotor.optimizeBusUtilization();
+      // steerMotor.optimizeBusUtilization();
 
       BaseStatusSignal.setUpdateFrequencyForAll(50, driveMotor.getPosition(), driveMotor.getVelocity(), steerMotor.getPosition());
     }

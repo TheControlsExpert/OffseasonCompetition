@@ -3,6 +3,7 @@ package frc.robot.subsystems.Rollers;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Rollers.RollersIO.RollersIOInputs;
 import frc.robot.subsystems.Rollers.SensorsIO.SensorsIOInputs;
@@ -61,8 +62,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        
         Rollersio.updateInputs(inputs_rollers);
         Sensorsio.updateInputs(inputs_sensors);
+        SmartDashboard.putString("intake state", (CompletedCheckpoint.toString()));
 
        
         //state transitioning 
@@ -86,7 +89,7 @@ public class IntakeSubsystem extends SubsystemBase {
             CompletedCheckpoint = Checkpoint.IDLE;
         }
 
-         if (CompletedCheckpoint.equals(Checkpoint.EJECTED) && !inputs_sensors.firstReading && !inputs_sensors.lastReading) {
+         if (CompletedCheckpoint.equals(Checkpoint.EJECTED) && inputs_sensors.firstReading && inputs_sensors.lastReading) {
             CompletedCheckpoint = Checkpoint.IDLE;  
           
 
@@ -94,12 +97,20 @@ public class IntakeSubsystem extends SubsystemBase {
 
         //state control
 
-        if (CompletedCheckpoint.equals(Checkpoint.INITIATED) || CompletedCheckpoint.equals(Checkpoint.DETECTED)) {
-            Rollersio.setSpeedHandoff(0.4);
-            Rollersio.setSpeedLeftIntake(0.7);
-            Rollersio.setSpeedRightIntake(0.7);
+        if (CompletedCheckpoint.equals(Checkpoint.INITIATED)) { 
+            Rollersio.setSpeedHandoff(0.3);
+            Rollersio.setSpeedLeftIntake(0.65);
+            Rollersio.setSpeedRightIntake(0.65);
 
         }
+
+       else if (CompletedCheckpoint.equals(CompletedCheckpoint.DETECTED)) { 
+        Rollersio.setSpeedHandoff(0.2);
+        Rollersio.setSpeedLeftIntake(0.4);
+        Rollersio.setSpeedRightIntake(0.4);
+
+       }
+        
 
         else if (CompletedCheckpoint.equals(Checkpoint.IDLE)) {
             Rollersio.setSpeedHandoff(0);
@@ -140,6 +151,11 @@ public class IntakeSubsystem extends SubsystemBase {
 
         }
      
+    }
+
+
+    public boolean isTouchingLastSensor() {
+        return !inputs_sensors.lastReading;
     }
 
 

@@ -17,6 +17,13 @@ public class OuttakeCommand extends Command{
         this.pivot = pivot;
 
         addRequirements(intake, pivot);
+        
+
+        
+    }
+
+    @Override
+    public void initialize() {
         intake.CompletedCheckpoint = Checkpoint.OUTTAKING;
         pivot.setDesiredState(DesiredStates.HOME); 
         

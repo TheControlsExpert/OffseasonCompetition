@@ -9,7 +9,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.PivotConstants;
 
 public class ShooterSubsystem extends SubsystemBase {
-    public enum ShooterDesiredState {
+    public static enum ShooterDesiredState {
         ALIGNING,
         AMP,
         PODIUM,

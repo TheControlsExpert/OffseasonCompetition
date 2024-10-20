@@ -19,11 +19,15 @@ public class IntakeCommand extends Command{
         this.pivot = pivot;
         addRequirements(intake, pivot);
 
-        intake.CompletedCheckpoint = Checkpoint.INITIATED;
-        pivot.setDesiredState(DesiredStates.HOME);
+       
 
     }
 
+    @Override
+    public void initialize() {
+        intake.CompletedCheckpoint = Checkpoint.INITIATED;
+        pivot.setDesiredState(DesiredStates.HOME);
+    }
 
     @Override
     public void end(boolean interrupted) {

@@ -9,9 +9,9 @@ import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
 
 public class RollersIONEO implements RollersIO {
-    CANSparkMax intakeleft = new CANSparkMax(Constants.IntakeConstants.LEFTINTAKE_ID, MotorType.kBrushless);
-    CANSparkMax intakeright = new CANSparkMax(Constants.IntakeConstants.RIGHTINTAKE_ID, MotorType.kBrushless);
-    CANSparkMax handoff = new CANSparkMax(Constants.IntakeConstants.HANDOFF_ID, MotorType.kBrushless);
+    CANSparkMax intakeleft = new CANSparkMax(23, MotorType.kBrushless);
+    CANSparkMax intakeright = new CANSparkMax(20, MotorType.kBrushless);
+    CANSparkMax handoff = new CANSparkMax(13, MotorType.kBrushless);
 
     
 
@@ -85,7 +85,7 @@ public class RollersIONEO implements RollersIO {
     }
 
     public void setSpeedHandoff(double speed) {
-        handoff.set(speed);
+        handoff.set(-speed);
     }
 
 
