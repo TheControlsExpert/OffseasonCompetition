@@ -81,7 +81,7 @@ public class RollersIONEO implements RollersIO {
     }
 
     public void setSpeedRightIntake(double speed) {
-        intakeright.set(speed);
+        intakeright.set(-speed);
     }
 
     public void setSpeedHandoff(double speed) {

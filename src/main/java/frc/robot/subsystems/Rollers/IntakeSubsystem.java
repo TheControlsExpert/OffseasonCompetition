@@ -73,29 +73,31 @@ public class IntakeSubsystem extends SubsystemBase {
         // }
 
 
-         if (CompletedCheckpoint.equals(Checkpoint.INITIATED) && inputs_sensors.firstReading) {
+         if (CompletedCheckpoint.equals(Checkpoint.INITIATED) && !inputs_sensors.firstReading) {
             CompletedCheckpoint = Checkpoint.DETECTED;
-            
-
+ 
         }
 
-        else if (CompletedCheckpoint.equals(Checkpoint.DETECTED) && inputs_sensors.lastReading) {
+        else if (CompletedCheckpoint.equals(Checkpoint.INITIATED) && !inputs_sensors.lastReading) {
             CompletedCheckpoint = Checkpoint.IDLE;
         }
 
-        else if (CompletedCheckpoint.equals(Checkpoint.EJECTED) && !inputs_sensors.firstReading && !inputs_sensors.lastReading) {
+         if (CompletedCheckpoint.equals(Checkpoint.DETECTED) && !inputs_sensors.lastReading) {
+            CompletedCheckpoint = Checkpoint.IDLE;
+        }
+
+         if (CompletedCheckpoint.equals(Checkpoint.EJECTED) && !inputs_sensors.firstReading && !inputs_sensors.lastReading) {
             CompletedCheckpoint = Checkpoint.IDLE;  
           
 
         }
 
-
         //state control
 
         if (CompletedCheckpoint.equals(Checkpoint.INITIATED) || CompletedCheckpoint.equals(Checkpoint.DETECTED)) {
-            Rollersio.setSpeedHandoff(1);
-            Rollersio.setSpeedLeftIntake(1);
-            Rollersio.setSpeedRightIntake(1);
+            Rollersio.setSpeedHandoff(0.4);
+            Rollersio.setSpeedLeftIntake(0.7);
+            Rollersio.setSpeedRightIntake(0.7);
 
         }
 
@@ -107,34 +109,34 @@ public class IntakeSubsystem extends SubsystemBase {
         }
 
         else if (CompletedCheckpoint.equals(Checkpoint.EJECTED)) {
-            if (inputs_sensors.lastReading) {
-                Rollersio.setSpeedHandoff(1);
+            if (!inputs_sensors.lastReading) {
+                Rollersio.setSpeedHandoff(0.5);
                 Rollersio.setSpeedLeftIntake(0);
                 Rollersio.setSpeedRightIntake(0);
             }
 
             else {
-                Rollersio.setSpeedHandoff(1);
-                Rollersio.setSpeedLeftIntake(1);
-                Rollersio.setSpeedRightIntake(1);
+                Rollersio.setSpeedHandoff(0.5);
+                Rollersio.setSpeedLeftIntake(0.4);
+                Rollersio.setSpeedRightIntake(0.4);
             }
 
         }
 
 
-        else if (CompletedCheckpoint.equals(Checkpoint.MANUAL_INTAKING) && !inputs_sensors.lastReading) {
-            Rollersio.setSpeedHandoff(1);
-            Rollersio.setSpeedLeftIntake(1);
-            Rollersio.setSpeedRightIntake(1);
+        else if (CompletedCheckpoint.equals(Checkpoint.MANUAL_INTAKING)) {
+            Rollersio.setSpeedHandoff(0.35);
+            Rollersio.setSpeedLeftIntake(0.4);
+            Rollersio.setSpeedRightIntake(0.4);
 
 
         } 
 
 
         else if (CompletedCheckpoint.equals(Checkpoint.OUTTAKING)) {
-            Rollersio.setSpeedHandoff(-1);
-            Rollersio.setSpeedLeftIntake(-1);
-            Rollersio.setSpeedRightIntake(-1);
+            Rollersio.setSpeedHandoff(-0.6);
+            Rollersio.setSpeedLeftIntake(-0.6);
+            Rollersio.setSpeedRightIntake(-0.6);
 
         }
      

@@ -11,6 +11,8 @@ import frc.robot.commands.IntakeCommands.IntakeCommand;
 import frc.robot.commands.IntakeCommands.IntakeManualCommand;
 import frc.robot.commands.IntakeCommands.OuttakeCommand;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.Pivot.PivotIONEO;
+import frc.robot.subsystems.Pivot.PivotSubsystem;
 import frc.robot.subsystems.Rollers.IntakeSubsystem;
 import frc.robot.subsystems.Rollers.RollersIONEO;
 import frc.robot.subsystems.Rollers.SensorsIO;
@@ -29,10 +31,13 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
+  //private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final RollersIONEO rollers = new RollersIONEO();
   private final SensorsIO sensors = new SensorsIO();
+  private final PivotIONEO pivotIO = new PivotIONEO();
+  
   private final IntakeSubsystem intake = new IntakeSubsystem(rollers, sensors);
+  private final PivotSubsystem pivot = new PivotSubsystem(pivotIO, intake);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -59,9 +64,9 @@ public class RobotContainer {
 
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
-    m_driverController.a().whileTrue(new IntakeCommand(intake));
-    m_driverController.b().whileTrue(new OuttakeCommand(intake));
-    m_driverController.x().whileTrue(new IntakeManualCommand(intake));
+    m_driverController.a().whileTrue(new IntakeCommand(intake, pivot));
+    m_driverController.b().whileTrue(new OuttakeCommand(intake, pivot));
+    m_driverController.x().whileTrue(new IntakeManualCommand(intake, pivot));
   }
 
   /**
@@ -69,8 +74,8 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
-    return Autos.exampleAuto(m_exampleSubsystem);
-  }
+  // public Command getAutonomousCommand() {
+  //   // An example command will be run in autonomous
+  //   return Autos.exampleAuto(m_exampleSubsystem);
+  // }
 }

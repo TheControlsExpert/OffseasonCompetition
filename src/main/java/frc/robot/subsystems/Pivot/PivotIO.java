@@ -5,10 +5,10 @@ import org.littletonrobotics.junction.AutoLog;
 public interface PivotIO {
     @AutoLog
     public static class PivotIOInputs {
-        public double encoderpos;
-        public double encodervel;
-        public double current;
-        public double temperature;
+        public double encoderpos = 0;
+        public double encodervel = 0;
+        public double current = 0;
+        public double temperature = 0;
     }
 
     default void updateInputs(PivotIOInputs inputs) {}
