@@ -6,6 +6,7 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.SparkPIDController;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkLowLevel;
@@ -40,8 +41,8 @@ public class FlywheelIONEO implements FlywheelIO {
 
     @Override
     public void set_T_vel(double velocity) {
-        
-        shooterT.getPIDController().setReference(velocity, com.revrobotics.CANSparkBase.ControlType.kVelocity, 0, feedforwardT.calculate(velocity), SparkPIDController.ArbFFUnits.kVoltage); 
+        SmartDashboard.putNumber("T feedforward", feedforwardT.calculate(velocity));
+        shooterT.getPIDController().setReference(velocity, com.revrobotics.CANSparkBase.ControlType.kVelocity, 0,  feedforwardT.calculate(velocity), SparkPIDController.ArbFFUnits.kVoltage); 
     }
 
 

@@ -1,6 +1,7 @@
 package frc.robot.subsystems.SwerveActual;
 
 import frc.robot.subsystems.SwerveActual.SwerveModule;
+import frc.robot.subsystems.Vision.Limelight3G.LimelightHelpers;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants;
 
@@ -13,6 +14,9 @@ import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.util.PIDConstants;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -124,18 +128,28 @@ public class Swerve extends SubsystemBase {
         //odometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics, getGyroYaw(), getModulePositions());
         
         //        
-// AutoBuilder.configureHolonomic(
+//    RobotConfig config;
+//     try{
+//       config = RobotConfig.fromGUISettings();
+//     } catch (Exception e) {
+//       // Handle exception as needed
+//       e.printStackTrace();
+//     }
+
+//     // Configure AutoBuilder last
+//     AutoBuilder.configure(
 //             this::getPose, // Robot pose supplier
-//             this::setPose, // Method to reset odometry (will be called if your auto has a starting pose)
+//             this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
 //             this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-//             this::driveRobotOriented, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-//             new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-//                     new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-//                     new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
-//                     4.5, // Max module speed, in m/s
-//                     0.42905, // Drive base radius in meters. Distance from robot center to furthest module.
-//                     new ReplanningConfig() // Default path replanning config. See the API for the options here
+//             (speeds, feedforwards) -> driveRobotRelative(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
+//             new PPHolonomicDriveController( // The controller that will be used to follow the path
+//                     new PIDConstants(0, 0, 0), // PID for the x axis
+//                     new PIDConstants(0, 0, 0), // PID for the y axis
+                   
 //             ),
+
+            
+//             config, // The robot configuration
 //             () -> {
 //               // Boolean supplier that controls when the path will be mirrored for the red alliance
 //               // This will flip the path being followed to the red side of the field.
@@ -145,15 +159,17 @@ public class Swerve extends SubsystemBase {
 //               if (alliance.isPresent()) {
 //                 return alliance.get() == DriverStation.Alliance.Red;
 //               }
-//               return true;
+//               return false;
 //             },
 //             this // Reference to this subsystem to set requirements
-            
-        
 //     );
 //       PathPlannerLogging.setLogActivePathCallback((poses) -> field2.getObject("path").setPoses(poses));
 //     SmartDashboard.putData("Field", field2);
   }
+
+
+
+  
 
 
 
@@ -292,9 +308,11 @@ public class Swerve extends SubsystemBase {
       SmartDashboard.putNumber("gyro from pose", getPose().getRotation().getDegrees());
        // oldPose = estimator.getEstimatedPosition();
         //odometry.update(getGyroYaw(), getModulePositions());
-        //estimator.updateWithTime(Timer.getFPGATimestamp(), getGyroYaw(), getModulePositions());
+        estimator.updateWithTime(Timer.getFPGATimestamp(), getGyroYaw(), getModulePositions());
        // updateVision2();
       //  field2.setRobotPose(estimator.getEstimatedPosition());
+
+      //estimator.updateWithTime(0, getGyroYaw(), null);
         
         
 
@@ -413,7 +431,7 @@ public class Swerve extends SubsystemBase {
 // }
 
 
-public void updateVision2() {
+
 //         //Limelight3
         
 //         Pose2d ll3pose = ll3.getVision3().getPose();
@@ -511,7 +529,32 @@ public void updateVision2() {
 //       SmartDashboard.putBoolean("is giving pose", true);
 
 //     }
+
+
+public void updateVision() {
+    // boolean doRejectUpdate = false;
+    // LimelightHelpers.SetRobotOrientation("limelight", getGyroYaw().getRadians(), 0, 0, 0,0, 0);
+    // LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+    // if(Math.abs(gyro.getRate()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+    // {
+    //   doRejectUpdate = true;
+    // }
+    // if(mt2.tagCount == 0)
+    // {
+    //   doRejectUpdate = true;
+    // }
+    // if(!doRejectUpdate)
+    // {
+    //   estimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
+    //   estimator.addVisionMeasurement(
+    //       mt2.pose,
+    //       Timer.getFPGATimestamp() - mt2.latency);
+    // }
+
+
+
 }
+
 }
 
         

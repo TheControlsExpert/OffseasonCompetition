@@ -52,6 +52,42 @@ public class PivotIONEO implements PivotIO {
         Pivot.getPIDController().setReference(setpointInRotations, ControlType.kPosition);
     }
 
+
+    public void set(double num) {
+        Pivot.getPIDController().setReference(-num, ControlType.kDutyCycle);
+        //4Pivot.set(num);
+    }
+
+    public void resetEncoder() {
+        Pivot.getEncoder().setPosition(0);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
         
 }

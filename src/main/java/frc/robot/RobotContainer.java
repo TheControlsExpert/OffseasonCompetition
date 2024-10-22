@@ -7,7 +7,7 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
-import frc.robot.commands.DriveCommands.Drive;
+import frc.robot.commands.DriveCommands.DriveTimeauto;
 import frc.robot.commands.DriveCommands.TeleopSwerve;
 import frc.robot.commands.IntakeCommands.AlignIntakeDrive;
 import frc.robot.commands.IntakeCommands.AligningCombination;
@@ -15,9 +15,13 @@ import frc.robot.commands.IntakeCommands.DriveTime;
 import frc.robot.commands.IntakeCommands.IntakeCommand;
 import frc.robot.commands.IntakeCommands.IntakeManualCommand;
 import frc.robot.commands.IntakeCommands.OuttakeCommand;
+import frc.robot.commands.IntakeCommands.Shuffler;
 import frc.robot.commands.ShooterCommands.Shoot;
 import frc.robot.commands.ShooterCommands.Aligning.Amp;
+import frc.robot.commands.ShooterCommands.Aligning.Passing;
+import frc.robot.commands.ShooterCommands.Aligning.Podiumshot;
 import frc.robot.commands.ShooterCommands.Aligning.Subwoofer;
+import frc.robot.commands.ShooterCommands.Aligning.ZeroPivot;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Flywheels.FlywheelIONEO;
 import frc.robot.subsystems.Flywheels.ShooterSubsystem;
@@ -26,7 +30,7 @@ import frc.robot.subsystems.Pivot.PivotSubsystem;
 import frc.robot.subsystems.Rollers.IntakeSubsystem;
 import frc.robot.subsystems.Rollers.RollersIONEO;
 import frc.robot.subsystems.Rollers.SensorsIO;
-import frc.robot.subsystems.Swerve.SwerveSubsystem;
+
 import frc.robot.subsystems.SwerveActual.Swerve;
 import frc.robot.subsystems.Vision.Limelight3.Limelight3;
 
@@ -35,6 +39,7 @@ import javax.swing.plaf.basic.BasicBorders.RolloverButtonBorder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -52,10 +57,14 @@ public class RobotContainer {
   private final PivotIONEO pivotIO = new PivotIONEO();
   private final FlywheelIONEO shooterIO = new FlywheelIONEO();
   
-  private final IntakeSubsystem intake = new IntakeSubsystem(rollers, sensors);
-  private final PivotSubsystem pivot = new PivotSubsystem(pivotIO, intake);
-  private final ShooterSubsystem shooter = new ShooterSubsystem(shooterIO);
+  public final CommandXboxController m_copilotController = 
+  new CommandXboxController(1);    
+
   public  Limelight3 ll3 = new Limelight3();
+  private final IntakeSubsystem intake = new IntakeSubsystem(rollers, sensors, ll3);
+  private final PivotSubsystem pivot = new PivotSubsystem(pivotIO, intake, m_copilotController);
+  private final ShooterSubsystem shooter = new ShooterSubsystem(shooterIO);
+
   //private final SwerveSubsystem swervy = new SwerveSubsystem();
   private final Swerve swervo = new Swerve();
   private final XboxController driver = new XboxController(0);
@@ -69,8 +78,7 @@ public class RobotContainer {
   public final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
-  public final CommandXboxController m_copilotController = 
-      new CommandXboxController(1);    
+
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -97,7 +105,13 @@ public class RobotContainer {
     
 
     m_driverController.leftTrigger().whileTrue(new Subwoofer(pivot, shooter, m_driverController, intake));
+    m_driverController.y().whileTrue(new Podiumshot(swervo,  () -> driver.getRawAxis(translationAxis), () -> driver.getRawAxis(strafeAxis), new PIDController(0.05, 0, 0), shooter, pivot, intake, m_driverController));
+
+    m_copilotController.x().whileTrue(new Shuffler(intake));
+    //m_copilotController.a().whileTrue(new Amp(pivot, shooter, m_driverController, intake));
+
     m_driverController.a().whileTrue(new Amp(pivot, shooter, m_driverController, intake));
+    m_driverController.povDown().whileTrue(new Passing(pivot, shooter, m_driverController, intake));
 
     swervo.setDefaultCommand(
             new TeleopSwerve(
@@ -112,9 +126,8 @@ public class RobotContainer {
     m_driverController.povUp().onTrue(swervo.runOnce(() -> swervo.resetGyro()));  
 
     m_driverController.leftBumper().whileTrue(new AligningCombination(new AlignIntakeDrive(swervo, ll3, new PIDController(8, 0, 0), new PIDController(0.2,0,0), intake, pivot), new DriveTime(intake, swervo, 1)));
-
-    m_copilotController.y().onTrue(swervo.runOnce(() -> swervo.resetGyro()));
-
+   // m_copilotController.x().whileTrue(new ZeroPivot(pivot, m_copilotController));
+   
 
 
     
@@ -125,8 +138,8 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-  // public Command getAutonomousCommand() {
-  //   // An example command will be run in autonomous
-  //   return Autos.exampleAuto(m_exampleSubsystem);
-  // }
+  public Command getAutonomousCommand() {
+    // An example command will be run in autonomous
+    return new Autos(swervo, pivot, shooter, intake).andThen(new DriveTimeauto(swervo));
+  }
 }

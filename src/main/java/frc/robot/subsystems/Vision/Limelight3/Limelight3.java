@@ -102,8 +102,6 @@ private double initTimeLED;
     public void setLED() {
         initTimeLED = Timer.getFPGATimestamp();
         
-        
-        
     }
 
     @Override

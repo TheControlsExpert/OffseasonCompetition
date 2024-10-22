@@ -9,14 +9,14 @@ import frc.robot.subsystems.Pivot.PivotSubsystem.DesiredStates;
 import frc.robot.subsystems.Rollers.IntakeSubsystem;
 import frc.robot.subsystems.Rollers.IntakeSubsystem.Checkpoint;
 
-public class Amp extends Command {
+public class Passing extends Command {
 
     private ShooterSubsystem shooter;
     private PivotSubsystem pivot;
     private CommandXboxController controller;
     private IntakeSubsystem intake;
 
-    public Amp(PivotSubsystem pivot, ShooterSubsystem shooter, CommandXboxController controller, IntakeSubsystem intake) {
+    public Passing(PivotSubsystem pivot, ShooterSubsystem shooter, CommandXboxController controller, IntakeSubsystem intake) {
         this.shooter = shooter;
         this.pivot = pivot;
         this.controller = controller;
@@ -26,8 +26,8 @@ public class Amp extends Command {
 
     @Override
     public void initialize() {
-        shooter.setDesiredState(ShooterDesiredState.AMP);
-        pivot.setDesiredState(DesiredStates.AMP);
+        shooter.setDesiredState(ShooterDesiredState.PASSING);
+        pivot.setDesiredState(DesiredStates.SUBWOOFER);
     }
 
     @Override
@@ -35,9 +35,8 @@ public class Amp extends Command {
         if (controller.rightTrigger().getAsBoolean()) {
             intake.CompletedCheckpoint = Checkpoint.EJECTED;        
         }
-
-        
     }
+    
 
     @Override
     public boolean isFinished() {

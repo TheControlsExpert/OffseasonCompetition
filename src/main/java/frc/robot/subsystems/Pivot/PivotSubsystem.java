@@ -5,6 +5,7 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.Constants.PivotConstants;
 import frc.robot.subsystems.Pivot.PivotIO.PivotIOInputs;
@@ -21,14 +22,15 @@ public class PivotSubsystem extends SubsystemBase {
         PASSING,
         ALIGNING,
         TRAVELLING,
-        HOME
+        HOME,
+        MANUAL
     }
 
    
     private DesiredStates PivotDesiredState = DesiredStates.TRAVELLING;
 
     @AutoLogOutput
-    private double currentSetpoint = 0.0;
+    public double currentSetpoint = 0.0;
 
 
     @AutoLogOutput
@@ -38,14 +40,30 @@ public class PivotSubsystem extends SubsystemBase {
    // private PivotIOInputsAutoLogged inputs = new PivotIOInputsAutoLogged();
    private IntakeSubsystem intake;
 
-   public PivotSubsystem(PivotIONEO pivotIO, IntakeSubsystem intake) {
+private CommandXboxController controller;
+
+   public PivotSubsystem(PivotIONEO pivotIO, IntakeSubsystem intake, CommandXboxController controller) {
        this.pivotIO = pivotIO;
        this.intake = intake;
+       this.controller = controller;
    }
 
 
    @Override
    public void periodic() {
+    if (controller.rightBumper().getAsBoolean()) {
+        pivotIO.resetEncoder();
+    }
+    if (controller.leftBumper().getAsBoolean()) {
+        
+        pivotIO.set(0.3);
+    }
+    
+    else {
+
+
+
+    
     SmartDashboard.putString("Pivot state", PivotDesiredState.toString());
          pivotIO.updateInputs(inputs);         
 
@@ -59,12 +77,18 @@ public class PivotSubsystem extends SubsystemBase {
             }
          }
 
+         else if (PivotDesiredState.equals(DesiredStates.MANUAL)) {
+            
+         }
+
          else if (PivotDesiredState.equals(DesiredStates.AMP)) {
             currentSetpoint = 6.35;
          }
 
          else if (PivotDesiredState.equals(DesiredStates.PODIUM)) {
-            currentSetpoint = Constants.PivotConstants.PODIUM_POSITION;
+            //currentSetpoint = 22.5;
+           // currentSetpoint = 26;
+           currentSetpoint = 23.7;
          }
 
          else if (PivotDesiredState.equals(DesiredStates.SUBWOOFER)) {
@@ -94,14 +118,7 @@ public class PivotSubsystem extends SubsystemBase {
 
 
           else if (PivotDesiredState.equals(DesiredStates.PASSING)) {
-            currentSetpoint = Constants.PivotConstants.PASSING_POSITION;
-            if (currentSetpoint > Constants.PivotConstants.MAX_EXTENSION) {
-                currentSetpoint = Constants.PivotConstants.MAX_EXTENSION - 1;
-            }
-
-            else if (currentSetpoint < Constants.PivotConstants.MIN_EXTENSION) {
-                currentSetpoint = Constants.PivotConstants.MIN_EXTENSION + 1;
-            }
+            currentSetpoint = 36;
           }
 
           
@@ -119,7 +136,17 @@ public class PivotSubsystem extends SubsystemBase {
          else {
              atPosition = false;
          }
+        }
    }
+
+
+public void set(double num) {
+    pivotIO.set(num);
+}
+
+public void resetEncoder() {
+    pivotIO.resetEncoder();
+}
 
 
 

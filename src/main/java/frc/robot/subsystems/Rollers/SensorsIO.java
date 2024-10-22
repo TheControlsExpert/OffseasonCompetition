@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants;
 
 public class SensorsIO {
-    DigitalInput firstIR = new DigitalInput(Constants.IntakeConstants.firstIR_ID);
+    DigitalInput firstIR = new DigitalInput(0);
     DigitalInput lastIR = new DigitalInput(1);
 
     

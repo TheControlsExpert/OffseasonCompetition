@@ -4,6 +4,7 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.PivotConstants;
@@ -26,9 +27,6 @@ public class ShooterSubsystem extends SubsystemBase {
     private double currentSetpointT = 0;
     @AutoLogOutput
     private boolean atPosition = true;
-
-    
-
     private FlywheelIONEO shooterIO;
     private FlywheelIOInputsAutoLogged inputs = new FlywheelIOInputsAutoLogged();
 
@@ -46,6 +44,8 @@ public class ShooterSubsystem extends SubsystemBase {
               previousdesiredState = ShooterdesiredState;
          }
 
+
+
          double newsetpointB = 0;
          double newsetpointT = 0;
 
@@ -56,14 +56,14 @@ public class ShooterSubsystem extends SubsystemBase {
             }
     
             else if (ShooterdesiredState.equals(ShooterDesiredState.AMP)) {
-                newsetpointB = 1000;
-                newsetpointT = 500;
+                newsetpointB = 1200;
+                newsetpointT = 300;
 
             }
     
             else if (ShooterdesiredState.equals(ShooterDesiredState.PODIUM)) {
-                newsetpointT = Constants.ShooterConstants.PODIUM_POSITION;
-                newsetpointB = Constants.ShooterConstants.PODIUM_POSITION;
+                newsetpointT = 4000;
+                newsetpointB = 4000;
             }
     
             else if (ShooterdesiredState.equals(ShooterDesiredState.SUBWOOFER)) {
@@ -72,8 +72,8 @@ public class ShooterSubsystem extends SubsystemBase {
             }
     
             else if (ShooterdesiredState.equals(ShooterDesiredState.PASSING)) {
-                newsetpointB = Constants.ShooterConstants.PASSING_POSITION;
-                newsetpointT = Constants.ShooterConstants.PASSING_POSITION;
+                newsetpointB = 2400;
+                newsetpointT = 2400;
             }
     
             // else if (ShooterdesiredState.equals(ShooterDesiredState.ALIGNING)) {
@@ -101,6 +101,11 @@ public class ShooterSubsystem extends SubsystemBase {
                   atPosition = false;
               }
              
+       SmartDashboard.putNumber("shooter vel B", inputs.Bvelocity);
+       SmartDashboard.putNumber("shooter setpoint T", newsetpointT);
+       SmartDashboard.putNumber("shooter vel T", inputs.Tvelocity);   
+         SmartDashboard.putNumber("shooter setpoint B", newsetpointB);
+
     }
 
     public void setDesiredState(ShooterDesiredState state) {

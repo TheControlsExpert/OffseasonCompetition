@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Rollers.RollersIO.RollersIOInputs;
 import frc.robot.subsystems.Rollers.SensorsIO.SensorsIOInputs;
+import frc.robot.subsystems.Vision.Limelight3.Limelight3;
 
 
 public class IntakeSubsystem extends SubsystemBase {
@@ -45,13 +46,16 @@ public class IntakeSubsystem extends SubsystemBase {
     
     private SensorsIO Sensorsio;
     private final SensorsIOInputsAutoLogged inputs_sensors = new SensorsIOInputsAutoLogged();
+
+    private Limelight3 ll3;
     
     //private final SensorsIOInputsAutoLogged 
     //private final SensorsIOInputsAutoLogged inputs_sensors = new SensorsIOInputsAutoLogged();
 
-    public IntakeSubsystem(RollersIONEO Rollersio, SensorsIO Sensorsio) {
+    public IntakeSubsystem(RollersIONEO Rollersio, SensorsIO Sensorsio, Limelight3 ll3) {
         this.Rollersio = Rollersio;
         this.Sensorsio = Sensorsio;
+        this.ll3 = ll3;
 
         //updating here as the input default values make no sense. Ex. 0 Celsius motors?
         this.Rollersio.updateInputs(inputs_rollers);
@@ -62,6 +66,11 @@ public class IntakeSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+
+        
+        SmartDashboard.putBoolean("intake sensor", isTouchingLastSensor());
+        SmartDashboard.putBoolean("intake state == idle?", CompletedCheckpoint.equals(Checkpoint.IDLE));
+        
         
         Rollersio.updateInputs(inputs_rollers);
         Sensorsio.updateInputs(inputs_sensors);
@@ -78,6 +87,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
          if (CompletedCheckpoint.equals(Checkpoint.INITIATED) && !inputs_sensors.firstReading) {
             CompletedCheckpoint = Checkpoint.DETECTED;
+            ll3.setLED();
  
         }
 
@@ -87,6 +97,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
          if (CompletedCheckpoint.equals(Checkpoint.DETECTED) && !inputs_sensors.lastReading) {
             CompletedCheckpoint = Checkpoint.IDLE;
+            
         }
 
          if (CompletedCheckpoint.equals(Checkpoint.EJECTED) && inputs_sensors.firstReading && inputs_sensors.lastReading) {
